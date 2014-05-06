@@ -21,11 +21,8 @@ abstract class Kohana_Asset_Engine_Sass {
 		// Set error reporting
 		$old = error_reporting(E_ALL & ~(E_NOTICE | E_DEPRECATED | E_STRICT));
 
-		// Include the engine
-		include_once Kohana::find_file('vendor/PHamlP/sass', 'SassParser');
-
 		// Set SASS
-		$sass = new SassParser(array());
+		$sass = new SassParser();
 
 		// Set content
 		$content = $sass->toCss($content, false);

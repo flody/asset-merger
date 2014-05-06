@@ -1,0 +1,35 @@
+{
+  "name": "alle/assets-merger",
+  "type": "kohana-module",
+  "description": "Managing and merging assets for Kohana",
+  "homepage": "https://github.com/alle/assets-merger",
+  "license": "BSD-3-Clause",
+  "keywords": ["kohana", "assets"],
+  "authors": [
+    {
+      "name": "OpenBuildings",
+      "homepage": "http://www.openbuildings.com/",
+      "role": "developer"
+    },
+    {
+      "name": "Florian Rodriguez",
+      "homepage": "http://www.negative-network.com",
+      "role": "developer"
+    },
+    {
+      "name": "Alessandro Frangioni",
+      "email": "alessandro.frangioni@gmail.com",
+      "homepage": "https://github.com/alle",
+      "role": "developer"
+    }
+  ],
+  "require": {
+    "composer/installers": "~1.0",
+    "kohana/core": ">=3.3",
+    "php": ">=5.3.3",
+    "mrclay/minify": ">=2.1.7",
+    "leafo/lessphp": "0.4.0",
+    "coffeescript/coffeescript": ">=1.3",
+    "richthegeek/phpsass": ">=2014-03-20"
+  }
+}

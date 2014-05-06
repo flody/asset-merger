@@ -1,19 +1,21 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
+
 /**
-* Pure php engine
-*
-* @package    Despark/asset-merger
-* @author     Ivan Kerin
-* @copyright  (c) 2011-2012 Despark Ltd.
-* @license    http://creativecommons.org/licenses/by-sa/3.0/legalcode
-*/
+ * Pure php engine
+ *
+ * @package        Despark/asset-merger
+ * @author         Ivan Kerin
+ * @copyright  (c) 2011-2012 Despark Ltd.
+ * @license        http://creativecommons.org/licenses/by-sa/3.0/legalcode
+ */
 abstract class Kohana_Asset_Engine_Php {
 
 	/**
 	 * Process asset content
 	 *
-	 * @param   string  $content
-	 * @param   Asset   $asset
+	 * @param   string $content
+	 * @param   Asset  $asset
+	 *
 	 * @return  string
 	 */
 	static public function process($content, Asset $asset)
@@ -27,4 +29,4 @@ abstract class Kohana_Asset_Engine_Php {
 		return ob_get_clean();
 	}
 
-} // End Asset_Engine_Php
+} // End Kohana_Asset_Engine_Php

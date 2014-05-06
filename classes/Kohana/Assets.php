@@ -24,8 +24,9 @@ abstract class Kohana_Assets {
 	/**
 	 * Determine if file was modified later then source
 	 *
-	 * @param   string  $file
-	 * @param   string  $source_modified_time
+	 * @param   string $file
+	 * @param   string $source_modified_time
+	 *
 	 * @return  bool
 	 */
 	public static function is_modified_later($file, $source_modified_time)
@@ -34,18 +35,43 @@ abstract class Kohana_Assets {
 	}
 
 	/**
+	 * Determine if file was modified later then source or it has changed
+	 *
+	 * @param string $file
+	 * @param string $source_modified_time
+	 * @param string $source_file
+	 *
+	 * @return bool
+	 */
+	public static function has_changed($file, $source_modified_time, $source_file)
+	{
+		return (Assets::is_modified_later($file, $source_modified_time) OR md5_file($file) != md5_file($source_file));
+	}
+
+	/**
 	 * Set file path
 	 *
-	 * @param   string  $type
-	 * @param   string  $file
-	 * @return  string
+	 * @param string $type
+	 * @param string $file
+	 * @param string $destination_path
+	 * @param string $folder
+	 *
+	 * @return string
 	 */
-	public static function file_path($type, $file, $destination_path = NULL,$folder)
+	public static function file_path($type, $file, $destination_path = NULL, $folder)
 	{
 		// Set file
 		$file = substr($file, 0, strrpos($file, $type)).$type;
 
-		return Kohana::$config->load('asset-merger')->get('docroot').$folder.DIRECTORY_SEPARATOR.$destination_path.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.$file;
+		$file_path = rtrim(Kohana::$config->load('asset-merger')->get('docroot'), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+		$file_path .= trim($folder, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+		$destination_path AND $file_path .= trim($destination_path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+		$file_path .= $type.DIRECTORY_SEPARATOR.$file;
+
+		return $file_path;
 	}
 
 	public function destination_path()
@@ -56,16 +82,25 @@ abstract class Kohana_Assets {
 	/**
 	 * Set web path
 	 *
-	 * @param   string  $type
-	 * @param   string  $file
-	 * @return  string
+	 * @param string $type
+	 * @param string $file
+	 * @param string $destination_path
+	 * @param string $folder
+	 *
+	 * @return string
 	 */
 	public static function web_path($type, $file, $destination_path, $folder)
 	{
 		// Set file
 		$file = substr($file, 0, strrpos($file, $type)).$type;
 
-		return $folder.'/'.$destination_path.'/'.$type.'/'.$file;
+		$web_path = rtrim($folder, '/').'/';
+
+		$destination_path AND $web_path .= rtrim($destination_path, '/').'/';
+
+		$web_path .= $type.'/'.$file;
+
+		return $web_path;
 	}
 
 	// Default short names for types
@@ -125,8 +160,12 @@ abstract class Kohana_Assets {
 	/**
 	 * Return an instance of an asset collection.
 	 *
-	 * @param   $group   string
-	 * @return  Assets
+	 * @param string      $group
+	 * @param string|null $destination_path
+	 * @param bool|null   $copy
+	 * @param string|null $folder
+	 *
+	 * @return mixed
 	 */
 	static public function instance($group, $destination_path = NULL, $copy = NULL, $folder = NULL)
 	{
@@ -146,12 +185,16 @@ abstract class Kohana_Assets {
 	 * and merge
 	 *
 	 * @param string $name
+	 * @param string|null $destination_path
+	 * @param bool|null   $copy
+	 * @param string|null $folder
 	 */
 	public function __construct($name = 'all', $destination_path = NULL, $copy = NULL, $folder = NULL)
 	{
 
 		// Set copy
-        if ($copy === NULL){
+        if ($copy === NULL)
+		{
             if (Kohana::$config->load('asset-merger')->get('debug')) 
             {
                 $this->_copy = FALSE;
@@ -192,16 +235,31 @@ abstract class Kohana_Assets {
 		$this->_process = $this->_merge = (in_array(Kohana::$environment, (array) Kohana::$config->load('asset-merger')->get('merge')) and $this->_copy);
 	}
 
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
 	public function name()
 	{
 		return $this->_name;
 	}
 
+	/**
+	 * Get folder
+	 *
+	 * @return string
+	 */
 	public function folder()
 	{
 		return rtrim($this->_folder,"/");
 	}
 
+	/**
+	 * Get absolute destination's folder path
+	 *
+	 * @return string
+	 */
 	public function folder_abs()
 	{
 		return Kohana::$config->load('asset-merger')->docroot.$this->_folder;
@@ -357,11 +415,13 @@ abstract class Kohana_Assets {
 	/**
 	 * Adds assets to the appropriate type
 	 *
-	 * @param   string  $class
-	 * @param   string  $type
-	 * @param   string  $file
-	 * @param   array   $options
-	 * @return  Assets
+	 * @param string $class
+	 * @param string $type
+	 * @param string $file
+	 * @param array  $options
+	 *
+	 * @return Assets
+	 * @throws Kohana_Exception
 	 */
 	protected function add($class, $type, $file, array $options = array())
 	{
